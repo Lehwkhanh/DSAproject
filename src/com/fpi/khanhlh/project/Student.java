@@ -47,15 +47,13 @@ public class Student implements Comparable<Student>, Serializable {
         return score3;
     }
 
-    // Tính điểm trung bình
     public double getAverageScore() {
         double avg = (score1 + score2 + score3) / 3.0;
         return Math.round(avg * 10.0) / 10.0;
     }
     
-    // Tính hạng dựa trên điểm trung bình
     public String getRank() {
-        double avg = getAverageScore();  // Sử dụng getAverageScore() để lấy điểm trung bình
+        double avg = getAverageScore();
         if (avg < 5.0) return "Fail";
         else if (avg < 6.5) return "Medium";
         else if (avg < 7.5) return "Good";
@@ -63,13 +61,11 @@ public class Student implements Comparable<Student>, Serializable {
         else return "Excellent";
     }
 
-    // So sánh theo ID
     @Override
     public int compareTo(Student other) {
         return this.id.compareTo(other.id);
     }
 
-    // Xuất thông tin ra dạng chuỗi
     @Override
     public String toString() {
         return "ID: " + id + ", Name: " + name + ", Major: " + major + ", Average Score: " + getAverageScore();

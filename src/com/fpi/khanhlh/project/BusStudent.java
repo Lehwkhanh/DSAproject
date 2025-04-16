@@ -5,9 +5,8 @@ public class BusStudent extends Student {
         super(id, name, "Business", score1, score2, score3);
     }
 
-    // Có thể thêm phương thức đặc thù nếu cần
     public double calculateEconomicsScore() {
-        // Ví dụ: tính điểm cho ngành Kinh tế có thể khác biệt
-        return getAverageScore() * 1.05; // Ví dụ: nhân điểm trung bình với 1.05
+        
+        return getAverageScore() * 1.05;
     }
 }
