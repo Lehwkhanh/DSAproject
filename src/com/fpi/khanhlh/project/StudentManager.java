@@ -51,25 +51,23 @@ public class StudentManager {
     }
 
     public void sortStudentsByName() {
-        students.sort(Comparator.comparing(Student::getName));
+        students = mergeSortByName(students);
         storage.save(students);
     }
 
     public void sortStudentsByScore() {
-        students.sort(Comparator.comparingDouble(Student::getAverageScore).reversed());
+        students = mergeSortByScore(students);
         storage.save(students);
     }
 
     public void sortStudentsById() {
-        students.sort(Comparator.comparing(Student::getId));
+        students = mergeSortById(students);
         storage.save(students);
     }
 
     private void refreshSortedLists() {
-        sortedById = new ArrayList<>(students);
-        sortedByName = new ArrayList<>(students);
-        sortedById.sort(Comparator.comparing(Student::getId));
-        sortedByName.sort(Comparator.comparing(Student::getName));
+        sortedById = mergeSortById(new ArrayList<>(students));
+        sortedByName = mergeSortByName(new ArrayList<>(students));
     }
 
     public Student searchStudentById(String id) {
@@ -78,12 +76,24 @@ public class StudentManager {
 
     public Student searchStudentByName(String name) {
         refreshSortedLists();
-        int index = Collections.binarySearch(
-            sortedByName,
-            new Student("", name, "", 0, 0, 0),
-            Comparator.comparing(Student::getName)
-        );
-        return index >= 0 ? sortedByName.get(index) : null;
+        int left = 0;
+        int right = sortedByName.size() - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            Student midStudent = sortedByName.get(mid);
+            int cmp = midStudent.getName().compareTo(name);
+
+            if (cmp == 0) {
+                return midStudent;
+            } else if (cmp < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return null;
     }
 
     public List<Student> searchStudentsByName(String name) {
@@ -101,5 +111,75 @@ public class StudentManager {
 
     public List<Student> getStudents() {
         return students;
+    }
+
+    // Merge sort helpers
+    private List<Student> mergeSortByName(List<Student> list) {
+        if (list.size() <= 1) return list;
+        int mid = list.size() / 2;
+        List<Student> left = mergeSortByName(list.subList(0, mid));
+        List<Student> right = mergeSortByName(list.subList(mid, list.size()));
+        return mergeByName(left, right);
+    }
+
+    private List<Student> mergeSortByScore(List<Student> list) {
+        if (list.size() <= 1) return list;
+        int mid = list.size() / 2;
+        List<Student> left = mergeSortByScore(list.subList(0, mid));
+        List<Student> right = mergeSortByScore(list.subList(mid, list.size()));
+        return mergeByScore(left, right);
+    }
+
+    private List<Student> mergeSortById(List<Student> list) {
+        if (list.size() <= 1) return list;
+        int mid = list.size() / 2;
+        List<Student> left = mergeSortById(list.subList(0, mid));
+        List<Student> right = mergeSortById(list.subList(mid, list.size()));
+        return mergeById(left, right);
+    }
+
+    private List<Student> mergeByName(List<Student> left, List<Student> right) {
+        List<Student> result = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < left.size() && j < right.size()) {
+            if (left.get(i).getName().compareTo(right.get(j).getName()) <= 0) {
+                result.add(left.get(i++));
+            } else {
+                result.add(right.get(j++));
+            }
+        }
+        result.addAll(left.subList(i, left.size()));
+        result.addAll(right.subList(j, right.size()));
+        return result;
+    }
+
+    private List<Student> mergeByScore(List<Student> left, List<Student> right) {
+        List<Student> result = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < left.size() && j < right.size()) {
+            if (left.get(i).getAverageScore() >= right.get(j).getAverageScore()) {
+                result.add(left.get(i++));
+            } else {
+                result.add(right.get(j++));
+            }
+        }
+        result.addAll(left.subList(i, left.size()));
+        result.addAll(right.subList(j, right.size()));
+        return result;
+    }
+
+    private List<Student> mergeById(List<Student> left, List<Student> right) {
+        List<Student> result = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < left.size() && j < right.size()) {
+            if (left.get(i).getId().compareTo(right.get(j).getId()) <= 0) {
+                result.add(left.get(i++));
+            } else {
+                result.add(right.get(j++));
+            }
+        }
+        result.addAll(left.subList(i, left.size()));
+        result.addAll(right.subList(j, right.size()));
+        return result;
     }
 }

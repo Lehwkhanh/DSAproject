@@ -47,7 +47,7 @@ public class StudentManagementFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Title
-        JLabel titleLabel = new JLabel("Student Score Management", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("Student Management System", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(new Color(0xFF6A00)); // FPT Orange color
         gbc.gridx = 0;
